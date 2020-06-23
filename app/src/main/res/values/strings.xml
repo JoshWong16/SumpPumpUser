@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SumpPumpUser</string>
+    <string name="TAG">SumpUser</string>
 </resources>
