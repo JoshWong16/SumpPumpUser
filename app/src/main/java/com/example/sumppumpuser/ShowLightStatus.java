@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -18,7 +19,6 @@ public class ShowLightStatus extends AppCompatActivity {
 
     TextView Light1, Light2, Light3, Light4, Light5, Light6;
 
-    Button btnRefresh;
     TextView[] textViewArr = new TextView[]{Light2, Light3, Light4, Light5, Light6, Light1};
 
     @Override
@@ -36,20 +36,7 @@ public class ShowLightStatus extends AppCompatActivity {
         textViewArr[4] = findViewById(R.id.light6);
         textViewArr[5] = findViewById(R.id.light1);
 
-        //Get all LightStatuses for each LightID and return as a list of Document objects
-        final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
-        getAllAsyncTask.execute();
-
-        btnRefresh = findViewById(R.id.refresh);
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
-            }
-        });
-
+        postRefresh();
     }
 
     /**
@@ -80,17 +67,37 @@ public class ShowLightStatus extends AppCompatActivity {
         protected void onPostExecute(List<Document> documents) {
             super.onPostExecute(documents);
             Log.d(AppSettings.tag, "In GetAllAsyncTask onPostExecute");
-
+            //parse through documents list and assign values to respective textviews
             for(int lightNum = 0; lightNum<documents.size(); lightNum++){
                 Document lightDoc = documents.get(lightNum);
                 String lightStatus = String.valueOf(lightDoc.get("LightStatus").asBoolean());
                 textViewArr[lightNum].setText(lightStatus);
             }
-//            Document light1 = documents.get(1);
-//            boolean light1Status = light1.get("LightStatus").asBoolean();
-//            String string = String.valueOf(light1Status);
-//            textView.setText(string);
 
         }
+
+
+    }
+
+
+    /**
+     * Refresh method
+     */
+    private void refresh(int milliseconds){
+        final Handler handler = new Handler();
+        final Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                postRefresh();
+            }
+        };
+    }
+
+    public void postRefresh(){
+        //Get all LightStatuses for each LightID and return as a list of Document objects
+        final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
+        getAllAsyncTask.execute();
+
+        refresh(1000);
     }
 }
