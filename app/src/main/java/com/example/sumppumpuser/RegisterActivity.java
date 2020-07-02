@@ -2,6 +2,7 @@ package com.example.sumppumpuser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -68,5 +69,14 @@ public class RegisterActivity extends AppCompatActivity {
                         String.valueOf(inputPassword.getText()), userAttributes, null, signupCallback);
             }
         });
+    }
+
+    /**
+     * Creates intent to start new verification activity
+     */
+    private void onRegisterClicked(){
+        Log.d(AppSettings.tag, "onRegisterClicked");
+        Intent intent = new Intent("android.intent.action.ShowLightStatus");
+        startActivity(intent);
     }
 }

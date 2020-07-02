@@ -13,4 +13,7 @@
     <string name="prompt_username">"Username"</string>
     <string name="prompt_name">"Name"</string>
     <string name="register">"Register"</string>
+    <string name="verificationCode">"Verification Code"</string>
+    <string name="verify">"Verify"</string>
+    <string name="login">"login"</string>
 </resources>
