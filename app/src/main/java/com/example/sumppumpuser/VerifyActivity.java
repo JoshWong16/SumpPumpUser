@@ -2,6 +2,7 @@ package com.example.sumppumpuser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -44,6 +45,7 @@ public class VerifyActivity extends AppCompatActivity {
                 public void onSuccess() {
                     //User was successfully confirmed
                     result[0] = "Success!";
+                    onVerifyClicked();
                 }
 
                 @Override
@@ -68,6 +70,15 @@ public class VerifyActivity extends AppCompatActivity {
 
             Log.d(AppSettings.tag, "Confirmation Result" + result);
         }
+    }
+
+    /**
+     * Creates intent to start new Login activity
+     */
+    private void onVerifyClicked(){
+        Log.d(AppSettings.tag, "onRegisterClicked");
+        Intent intent = new Intent("android.intent.action.LoginActivity");
+        startActivity(intent);
     }
 
 }

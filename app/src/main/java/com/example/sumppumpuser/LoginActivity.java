@@ -2,6 +2,7 @@ package com.example.sumppumpuser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -16,6 +17,10 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.Auth
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.ChallengeContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.continuations.MultiFactorAuthenticationContinuation;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.AuthenticationHandler;
+import com.auth0.android.jwt.JWT;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -31,6 +36,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onSuccess(CognitoUserSession userSession, CognitoDevice newDevice) {
                 Log.d(AppSettings.tag, "Login successful, can get tokens here");
+
+                String idToken = userSession.getIdToken().getJWTToken();
+
+                HashMap<String, String> logins = new HashMap<String, String>();
+                logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+
+                JWT jwt = new JWT(idToken);
+                String subject = jwt.getSubject();
+                Log.d(AppSettings.tag, subject);
+
+                onLoginClicked(idToken);
             }
 
             @Override
@@ -76,5 +92,16 @@ public class LoginActivity extends AppCompatActivity {
                 thisUser.getSessionInBackground(authenticationHandler);
             }
         });
+    }
+
+    /**
+     * Creates intent to start new ShowLightStatus activity
+     */
+    private void onLoginClicked(String idToken){
+        Log.d(AppSettings.tag, "onRegisterClicked");
+        Intent intent = new Intent("android.intent.action.ShowLightStatus");
+        intent.putExtra("idToken", idToken);
+
+        startActivity(intent);
     }
 }

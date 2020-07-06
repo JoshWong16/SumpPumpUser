@@ -29,6 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
         final EditText inputPassword = findViewById(R.id.password);
         final EditText inputUsername = findViewById(R.id.username);
         final EditText inputName = findViewById(R.id.name);
+        final EditText inputPhone = findViewById(R.id.phone);
 
         //Create a CognitoUserAttributes object and add user attributes
         final CognitoUserAttributes userAttributes = new CognitoUserAttributes();
@@ -42,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //check if this user (cognitoUser) needs to be confirmed
                 if (!signUpConfirmationState){
                     Log.d(AppSettings.tag, "sign up success...not confirmed, verification code sent to: " + cognitoUserCodeDeliveryDetails.getDestination());
+                    onRegisterClicked();
                 }
                 else{
                     //user already confirmed
@@ -62,6 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //add user attributes
                 userAttributes.addAttribute("given_name", String.valueOf(inputName.getText()));
                 userAttributes.addAttribute("email", String.valueOf(inputEmail.getText()));
+                userAttributes.addAttribute("phone_number", String.valueOf(inputPhone.getText()));
 
                 //access custom cognitoSettings class and call getUserPool() to sign up user
                 CognitoSettings cognitoSettings = new CognitoSettings(RegisterActivity.this);
@@ -69,6 +72,15 @@ public class RegisterActivity extends AppCompatActivity {
                         String.valueOf(inputPassword.getText()), userAttributes, null, signupCallback);
             }
         });
+
+        Button buttonLogin = findViewById(R.id.login);
+        buttonLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onLoginClicked();
+            }
+        });
+
     }
 
     /**
@@ -76,7 +88,16 @@ public class RegisterActivity extends AppCompatActivity {
      */
     private void onRegisterClicked(){
         Log.d(AppSettings.tag, "onRegisterClicked");
-        Intent intent = new Intent("android.intent.action.ShowLightStatus");
+        Intent intent = new Intent("android.intent.action.VerifyActivity");
+        startActivity(intent);
+    }
+
+    /**
+     * Creates intent to start new Login activity
+     */
+    private void onLoginClicked(){
+        Log.d(AppSettings.tag, "onRegisterClicked");
+        Intent intent = new Intent("android.intent.action.LoginActivity");
         startActivity(intent);
     }
 }

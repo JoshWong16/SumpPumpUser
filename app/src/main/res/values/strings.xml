@@ -16,4 +16,6 @@
     <string name="verificationCode">"Verification Code"</string>
     <string name="verify">"Verify"</string>
     <string name="login">"login"</string>
+    <string name="AlreadyHaveAccount">"Already have an account?"</string>
+    <string name="prompt_phone">"Phone Number"</string>
 </resources>

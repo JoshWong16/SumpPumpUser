@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class ShowLightStatus extends AppCompatActivity {
@@ -48,8 +49,13 @@ public class ShowLightStatus extends AppCompatActivity {
         @Override
         protected List<Document> doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
+
+            String idToken = getIntent().getStringExtra("idToken");
+            HashMap<String, String> logins = new HashMap<String, String>();
+            logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+
             //create instance of DatabaseAccess
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(ShowLightStatus.this);
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(ShowLightStatus.this, logins);
 
             try {
                 //call getAllLightStatus method
