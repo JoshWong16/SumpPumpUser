@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void onShowLightStatusClicked(){
         Log.d(AppSettings.tag, "onShowLightStatusClicked");
-        Intent intent = new Intent("android.intent.action.ShowLightStatus");
+        Intent intent = new Intent("android.intent.action.VerifyActivity");
         startActivity(intent);
     }
 }
