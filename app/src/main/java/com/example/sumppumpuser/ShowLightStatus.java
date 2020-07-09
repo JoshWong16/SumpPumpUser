@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
+import com.auth0.android.jwt.JWT;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,7 +21,7 @@ public class ShowLightStatus extends AppCompatActivity {
 
     TextView Light1, Light2, Light3, Light4, Light5, Light6;
 
-    TextView[] textViewArr = new TextView[]{Light2, Light3, Light4, Light5, Light6, Light1};
+    TextView[] textViewArr = new TextView[]{Light1, Light2, Light3, Light4, Light5, Light6};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,12 +31,12 @@ public class ShowLightStatus extends AppCompatActivity {
 
 
         //cast textView objects to actual textViews
-        textViewArr[0] = findViewById(R.id.light2);
-        textViewArr[1] = findViewById(R.id.light3);
-        textViewArr[2] = findViewById(R.id.light4);
-        textViewArr[3] = findViewById(R.id.light5);
-        textViewArr[4] = findViewById(R.id.light6);
-        textViewArr[5] = findViewById(R.id.light1);
+        textViewArr[0] = findViewById(R.id.light1);
+        textViewArr[1] = findViewById(R.id.light2);
+        textViewArr[2] = findViewById(R.id.light3);
+        textViewArr[3] = findViewById(R.id.light4);
+        textViewArr[4] = findViewById(R.id.light5);
+        textViewArr[5] = findViewById(R.id.light6);
 
         postRefresh();
     }
@@ -43,41 +44,47 @@ public class ShowLightStatus extends AppCompatActivity {
     /**
      * Async Task to get all light statuses
      */
-    private class GetAllAsyncTask extends AsyncTask<Void, Void, List<Document>>{
-        List<Document> documents;
+    private class GetAllAsyncTask extends AsyncTask<Void, Void, String[]>{
+        Document userItem;
+        String[] lightStatuses;
 
         @Override
-        protected List<Document> doInBackground(Void... voids) {
+        protected String[] doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
 
             String idToken = getIntent().getStringExtra("idToken");
             HashMap<String, String> logins = new HashMap<String, String>();
             logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
 
-            //create instance of DatabaseAccess
+            //create instance of DatabaseAccess and access user idToken
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(ShowLightStatus.this, logins);
+            JWT jwt = new JWT(idToken);
+            String subject = jwt.getSubject();
 
             try {
-                //call getAllLightStatus method
-                documents = databaseAccess.getAllLightStatus();
-                System.out.println(documents);
+                //call getUserItem method
+                userItem = databaseAccess.getUserItem(subject);
+
+                //retrieve light statuses from dynamoDB
+                for(int i = 1; i<7; i++){
+                    String lightID = "LightStatus" + String.valueOf(i);
+                    lightStatuses[i-1] = databaseAccess.getLightStatus(lightID, userItem);
+                }
 
             }catch (Exception e){
                 Log.e(AppSettings.tag, "error getting light statuses");
             }
 
-            return documents;
+            return lightStatuses;
         }
 
         @Override
-        protected void onPostExecute(List<Document> documents) {
-            super.onPostExecute(documents);
+        protected void onPostExecute(String[] lightStatuses) {
+            super.onPostExecute(lightStatuses);
             Log.d(AppSettings.tag, "In GetAllAsyncTask onPostExecute");
-            //parse through documents list and assign values to respective textviews
-            for(int lightNum = 0; lightNum<documents.size(); lightNum++){
-                Document lightDoc = documents.get(lightNum);
-                String lightStatus = String.valueOf(lightDoc.get("LightStatus").asBoolean());
-                textViewArr[lightNum].setText(lightStatus);
+            //set Text views
+            for(int lightNum = 0; lightNum<6; lightNum++){
+                textViewArr[lightNum].setText(lightStatuses[lightNum]);
             }
 
         }
