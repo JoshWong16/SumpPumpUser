@@ -2,6 +2,7 @@ package com.example.sumppumpuser.ui.home;
 
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
@@ -35,13 +37,7 @@ public class HomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
-        //final TextView textView = root.findViewById(R.id.text_home);
-        /*homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
-            }
-        });*/
+
         //cast textView objects to actual textViews
         textViewArr[0] = root.findViewById(R.id.light1);
         textViewArr[1] = root.findViewById(R.id.light2);
@@ -50,21 +46,19 @@ public class HomeFragment extends Fragment {
         textViewArr[4] = root.findViewById(R.id.light5);
         textViewArr[5] = root.findViewById(R.id.light6);
 
-        //Get all LightStatuses for each LightID and return as a list of Document objects
- //       final HomeFragment.GetAllAsyncTask getAllAsyncTask = new HomeFragment.GetAllAsyncTask();
-  //      getAllAsyncTask.execute();
-
-        /*btnRefresh = root.findViewById(R.id.refresh);
-        btnRefresh.setOnClickListener(new View.OnClickListener() {
+        btnRefresh = root.findViewById(R.id.refresh);
+        btnRefresh.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = getIntent();
-                finish();
-                startActivity(intent);
+                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                if (Build.VERSION.SDK_INT >= 26) {
+                    ft.setReorderingAllowed(false);
+                }
+                ft.detach(HomeFragment.this).attach(HomeFragment.this).commit();
             }
-        });*/
+        }));
 
-
+        //call getAllAsyncTask and execute
         final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
         getAllAsyncTask.execute();
         return root;
@@ -81,6 +75,7 @@ public class HomeFragment extends Fragment {
         protected String[] doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
 
+            //retrieve Intent from LoginActivity create login credentials for identity pool
             String idToken = getActivity().getIntent().getStringExtra("idToken");
             HashMap<String, String> logins = new HashMap<String, String>();
             logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
