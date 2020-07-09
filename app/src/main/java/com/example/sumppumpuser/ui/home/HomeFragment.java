@@ -16,17 +16,21 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.auth0.android.jwt.JWT;
+import com.example.sumppumpuser.AppSettings;
+import com.example.sumppumpuser.DatabaseAccess;
 import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.R;
+import com.example.sumppumpuser.ShowLightStatus;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     TextView Light1, Light2, Light3, Light4, Light5, Light6;
-
     Button btnRefresh;
-    TextView[] textViewArr = new TextView[]{Light2, Light3, Light4, Light5, Light6, Light1};
+    TextView[] textViewArr = new TextView[]{Light1, Light2, Light3, Light4, Light5, Light6};
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -39,12 +43,12 @@ public class HomeFragment extends Fragment {
             }
         });*/
         //cast textView objects to actual textViews
-        textViewArr[0] = root.findViewById(R.id.light2);
-        textViewArr[1] = root.findViewById(R.id.light3);
-        textViewArr[2] = root.findViewById(R.id.light4);
-        textViewArr[3] = root.findViewById(R.id.light5);
-        textViewArr[4] = root.findViewById(R.id.light6);
-        textViewArr[5] = root.findViewById(R.id.light1);
+        textViewArr[0] = root.findViewById(R.id.light1);
+        textViewArr[1] = root.findViewById(R.id.light2);
+        textViewArr[2] = root.findViewById(R.id.light3);
+        textViewArr[3] = root.findViewById(R.id.light4);
+        textViewArr[4] = root.findViewById(R.id.light5);
+        textViewArr[5] = root.findViewById(R.id.light6);
 
         //Get all LightStatuses for each LightID and return as a list of Document objects
  //       final HomeFragment.GetAllAsyncTask getAllAsyncTask = new HomeFragment.GetAllAsyncTask();
@@ -61,49 +65,61 @@ public class HomeFragment extends Fragment {
         });*/
 
 
+        final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
+        getAllAsyncTask.execute();
         return root;
     }
 
     /**
      * Async Task to get all light statuses
      */
-    /*private class GetAllAsyncTask extends AsyncTask<Void, Void, List<Document>> {
-        List<Document> documents;
+    private class GetAllAsyncTask extends AsyncTask<Void, Void, String[]>{
+        Document userItem;
+        String[] lightStatuses = new String[6];
 
         @Override
-        protected List<Document> doInBackground(Void... voids) {
-            Log.d("MainActivity", "In GetAllAsyncTask DoInBackground");
-            //create instance of DatabaseAccess
-            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(HomeFragment.this);
+        protected String[] doInBackground(Void... voids) {
+            Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
 
+            String idToken = getActivity().getIntent().getStringExtra("idToken");
+            HashMap<String, String> logins = new HashMap<String, String>();
+            logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+
+            //create instance of DatabaseAccess and access user idToken
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getActivity(), logins);
+            JWT jwt = new JWT(idToken);
+            String subject = jwt.getSubject();
+            Log.d(AppSettings.tag, "user sub: " + subject);
             try {
-                //call getAllLightStatus method
-                documents = databaseAccess.getAllLightStatus();
-                System.out.println(documents);
+                //call getUserItem method
+                userItem = databaseAccess.getUserItem(subject);
+
+                //retrieve light statuses from dynamoDB
+                for(int i = 1; i<7; i++){
+                    String lightID = "LightStatus" + i;
+                    Log.d(AppSettings.tag, databaseAccess.getLightStatus(lightID, userItem));
+                    lightStatuses[i-1] = databaseAccess.getLightStatus(lightID, userItem);
+                }
 
             }catch (Exception e){
-                Log.e("MainActivity", "error getting light statuses");
+                Log.e(AppSettings.tag, "error getting light statuses: " + e.getLocalizedMessage());
             }
 
-            return documents;
+            return lightStatuses;
         }
 
         @Override
-        protected void onPostExecute(List<Document> documents) {
-            super.onPostExecute(documents);
-            Log.d("MainActivity", "In GetAllAsyncTask onPostExecute");
-
-            for(int lightNum = 0; lightNum<documents.size(); lightNum++){
-                Document lightDoc = documents.get(lightNum);
-                String lightStatus = String.valueOf(lightDoc.get("LightStatus").asBoolean());
-                textViewArr[lightNum].setText(lightStatus);
+        protected void onPostExecute(String[] lightStatuses) {
+            super.onPostExecute(lightStatuses);
+            Log.d(AppSettings.tag, "In GetAllAsyncTask onPostExecute");
+            //set Text views
+            for(int lightNum = 0; lightNum<6; lightNum++){
+                textViewArr[lightNum].setText(lightStatuses[lightNum]);
             }
-//            Document light1 = documents.get(1);
-//            boolean light1Status = light1.get("LightStatus").asBoolean();
-//            String string = String.valueOf(light1Status);
-//            textView.setText(string);
 
         }
-    }*/
+
+
+    }
 
 }

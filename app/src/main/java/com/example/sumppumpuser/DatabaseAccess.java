@@ -34,7 +34,7 @@ public class DatabaseAccess {
 
     private final String COGNITO_IDENTITY_POOL_ID = "us-west-2:8f70a2b5-fb95-452b-8240-4cfe1ce3974a";
     private final Regions COGNITO_ITENTITY_POOL_REGION = Regions.US_WEST_2;
-    private final String DYNAMODB_TABLE = "SumpPumpApp";
+    private final String DYNAMODB_TABLE = "SumpPumpUsers";
     private Context context;
     private CognitoCachingCredentialsProvider credentialsProvider;
     private AmazonDynamoDBClient dbClient;
@@ -129,7 +129,7 @@ public class DatabaseAccess {
      * @return: state of the light
      */
     public String getLightStatus(String lightID, Document user){
-        String lightStatus = String.valueOf(user.get(lightID));
+        String lightStatus = user.get(lightID).asString();
         return lightStatus;
     }
 
