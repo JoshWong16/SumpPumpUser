@@ -24,9 +24,8 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     TextView Light1, Light2, Light3, Light4, Light5, Light6;
-
     Button btnRefresh;
-    TextView[] textViewArr = new TextView[]{Light2, Light3, Light4, Light5, Light6, Light1};
+    TextView[] textViewArr = new TextView[]{Light1, Light2, Light3, Light4, Light5, Light6};
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -39,12 +38,12 @@ public class HomeFragment extends Fragment {
             }
         });*/
         //cast textView objects to actual textViews
-        textViewArr[0] = root.findViewById(R.id.light2);
-        textViewArr[1] = root.findViewById(R.id.light3);
-        textViewArr[2] = root.findViewById(R.id.light4);
-        textViewArr[3] = root.findViewById(R.id.light5);
-        textViewArr[4] = root.findViewById(R.id.light6);
-        textViewArr[5] = root.findViewById(R.id.light1);
+        textViewArr[0] = root.findViewById(R.id.light1);
+        textViewArr[1] = root.findViewById(R.id.light2);
+        textViewArr[2] = root.findViewById(R.id.light3);
+        textViewArr[3] = root.findViewById(R.id.light4);
+        textViewArr[4] = root.findViewById(R.id.light5);
+        textViewArr[5] = root.findViewById(R.id.light6);
 
         //Get all LightStatuses for each LightID and return as a list of Document objects
  //       final HomeFragment.GetAllAsyncTask getAllAsyncTask = new HomeFragment.GetAllAsyncTask();

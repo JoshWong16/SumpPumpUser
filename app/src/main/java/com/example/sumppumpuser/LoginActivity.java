@@ -39,8 +39,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 String idToken = userSession.getIdToken().getJWTToken();
 
-                HashMap<String, String> logins = new HashMap<String, String>();
-                logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+//                HashMap<String, String> logins = new HashMap<String, String>();
+//                logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
 
 //                JWT jwt = new JWT(idToken);
 //                String subject = jwt.getSubject();

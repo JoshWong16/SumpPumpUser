@@ -38,21 +38,22 @@ public class ShowLightStatus extends AppCompatActivity {
         textViewArr[4] = findViewById(R.id.light5);
         textViewArr[5] = findViewById(R.id.light6);
 
-        postRefresh();
+        String idToken = getIntent().getStringExtra("idToken");
+        GetAllAsyncTask.execute(idToken);
     }
 
     /**
      * Async Task to get all light statuses
      */
-    private class GetAllAsyncTask extends AsyncTask<Void, Void, String[]>{
+    private class GetAllAsyncTask extends AsyncTask<String, Void, String[]>{
         Document userItem;
-        String[] lightStatuses;
+        String[] lightStatuses = new String[6];
 
         @Override
-        protected String[] doInBackground(Void... voids) {
+        protected String[] doInBackground(String... Strings) {
             Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
 
-            String idToken = getIntent().getStringExtra("idToken");
+            String idToken = Strings[0];
             HashMap<String, String> logins = new HashMap<String, String>();
             logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
 
@@ -60,7 +61,7 @@ public class ShowLightStatus extends AppCompatActivity {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(ShowLightStatus.this, logins);
             JWT jwt = new JWT(idToken);
             String subject = jwt.getSubject();
-
+            Log.d(AppSettings.tag, "user sub: " + subject);
             try {
                 //call getUserItem method
                 userItem = databaseAccess.getUserItem(subject);
@@ -72,11 +73,12 @@ public class ShowLightStatus extends AppCompatActivity {
                 }
 
             }catch (Exception e){
-                Log.e(AppSettings.tag, "error getting light statuses");
+                Log.e(AppSettings.tag, "error getting light statuses: " + e.getLocalizedMessage());
             }
 
             return lightStatuses;
         }
+
 
         @Override
         protected void onPostExecute(String[] lightStatuses) {
