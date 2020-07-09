@@ -38,22 +38,22 @@ public class ShowLightStatus extends AppCompatActivity {
         textViewArr[4] = findViewById(R.id.light5);
         textViewArr[5] = findViewById(R.id.light6);
 
-        String idToken = getIntent().getStringExtra("idToken");
-        GetAllAsyncTask.execute(idToken);
+        final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
+        getAllAsyncTask.execute();
     }
 
     /**
      * Async Task to get all light statuses
      */
-    private class GetAllAsyncTask extends AsyncTask<String, Void, String[]>{
+    private class GetAllAsyncTask extends AsyncTask<Void, Void, String[]>{
         Document userItem;
         String[] lightStatuses = new String[6];
 
         @Override
-        protected String[] doInBackground(String... Strings) {
+        protected String[] doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetAllAsyncTask DoInBackground");
 
-            String idToken = Strings[0];
+            String idToken = getIntent().getStringExtra("idToken");
             HashMap<String, String> logins = new HashMap<String, String>();
             logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
 
@@ -78,7 +78,6 @@ public class ShowLightStatus extends AppCompatActivity {
 
             return lightStatuses;
         }
-
 
         @Override
         protected void onPostExecute(String[] lightStatuses) {

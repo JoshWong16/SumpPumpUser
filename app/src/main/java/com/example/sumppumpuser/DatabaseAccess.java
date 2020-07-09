@@ -129,7 +129,7 @@ public class DatabaseAccess {
      * @return: state of the light
      */
     public String getLightStatus(String lightID, Document user){
-        String lightStatus = String.valueOf(user.get(lightID));
+        String lightStatus = user.get(lightID).asString();
         return lightStatus;
     }
 

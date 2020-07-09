@@ -99,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private void onLoginClicked(String idToken){
         Log.d(AppSettings.tag, "onRegisterClicked");
-        Intent intent = new Intent("android.intent.action.ShowLightStatus");
+        Intent intent = new Intent("android.intent.action.MainActivity");
         intent.putExtra("idToken", idToken);
 
         startActivity(intent);
