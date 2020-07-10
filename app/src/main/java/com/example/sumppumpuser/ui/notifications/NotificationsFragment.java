@@ -1,7 +1,9 @@
 package com.example.sumppumpuser.ui.notifications;
 
 import android.annotation.SuppressLint;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,9 +17,16 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
+import com.auth0.android.jwt.JWT;
+import com.example.sumppumpuser.AppSettings;
+import com.example.sumppumpuser.DatabaseAccess;
 import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.PumpTimes;
 import com.example.sumppumpuser.R;
+
+import java.util.HashMap;
+import java.util.List;
 
 public class NotificationsFragment extends Fragment {
 
@@ -66,4 +75,51 @@ public class NotificationsFragment extends Fragment {
         txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
         txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
     }
+
+    /**
+     * Async Task to get and display pump times
+     */
+    private class GetPumpTimesAsyncTask extends AsyncTask<Void, Void, List<List<String>>> {
+        List<String> pumpTimes1;
+        List<String> pumpTimes2;
+        List<List<String>> allPumpTimes;
+        @Override
+        protected List<List<String>> doInBackground(Void... voids) {
+            Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask DoInBackground");
+
+            //retrieve Intent from LoginActivity create login credentials for identity pool
+            String idToken = getActivity().getIntent().getStringExtra("idToken");
+            HashMap<String, String> logins = new HashMap<String, String>();
+            logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+
+            //create instance of DatabaseAccess and access user idToken
+            DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getActivity(), logins);
+            JWT jwt = new JWT(idToken);
+            String subject = jwt.getSubject();
+            try {
+                //get pump times from dynamoDB
+                pumpTimes1 = databaseAccess.getPumpTimeSet(subject, "PumpTimes1");
+                pumpTimes2 = databaseAccess.getPumpTimeSet(subject,"PumpTimes2");
+
+                allPumpTimes.add(pumpTimes1);
+                allPumpTimes.add(pumpTimes2);
+            }catch (Exception e){
+                Log.e(AppSettings.tag, "error getting pump times: " + e.getLocalizedMessage());
+            }
+
+            return allPumpTimes;
+        }
+
+        @Override
+        protected void onPostExecute(List<List<String>> allPumpTimes) {
+            super.onPostExecute(lightStatuses);
+            Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask onPostExecute");
+            //set Text views
+
+
+        }
+
+
+    }
+
 }

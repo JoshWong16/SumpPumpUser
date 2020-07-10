@@ -12,6 +12,7 @@ import com.amazonaws.mobileconnectors.dynamodbv2.document.Search;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.Table;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.UpdateItemOperationConfig;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
+import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.DynamoDBEntry;
 import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Primitive;
 import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Purpose of class is to initialize connection to DynamoDB
@@ -142,6 +144,22 @@ public class DatabaseAccess {
         Document retrievedDoc = dbTable.getItem(new Primitive(sub));
         if(retrievedDoc != null){
             return retrievedDoc;
+        }
+        else{
+            Log.e(AppSettings.tag, "error retrieving userItem from Dynamo");
+            return null;
+        }
+    }
+
+
+    public List<String> getPumpTimeSet(String subject, String pumpName){
+        Document retrievedDoc = dbTable.getItem(new Primitive(subject));
+        if(retrievedDoc != null){
+            //get timeSet from DynamoDB
+            DynamoDBEntry timeSet = retrievedDoc.get(pumpName);
+            //convert set to list and return
+            List<String> timeList = timeSet.convertToAttributeValue().getSS();
+            return timeList;
         }
         else{
             Log.e(AppSettings.tag, "error retrieving userItem from Dynamo");

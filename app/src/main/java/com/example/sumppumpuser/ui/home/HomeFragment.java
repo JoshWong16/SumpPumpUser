@@ -84,7 +84,6 @@ public class HomeFragment extends Fragment {
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getActivity(), logins);
             JWT jwt = new JWT(idToken);
             String subject = jwt.getSubject();
-            Log.d(AppSettings.tag, "user sub: " + subject);
             try {
                 //call getUserItem method
                 userItem = databaseAccess.getUserItem(subject);
