@@ -45,6 +45,8 @@ public class NotificationsFragment extends Fragment {
         final LinearLayout layout1 = root.findViewById(R.id.layout_historyP1);
         final LinearLayout layout2 = root.findViewById(R.id.layout_historyP2);
 
+        GetPumpTimesAsyncTask getPumps = new GetPumpTimesAsyncTask();
+
         txtHistoryP1 = new TextView(this.getContext());
         txtHistoryP1.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT,
@@ -59,15 +61,20 @@ public class NotificationsFragment extends Fragment {
 
         txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
         txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
+
+        txtHistoryP1.setText("");
+        txtHistoryP2.setText("");
+        getPumps.execute();
+
         return root;
     }
 
-    public void appendPump1(int time){
-        txtHistoryP1.append(String.valueOf(time)+"\n");
+    public void appendPump1(String time){
+        txtHistoryP1.append(time+"\n");
     }
 
-    public void appendPump2(int time){
-        txtHistoryP1.append(String.valueOf(time)+"\n");
+    public void appendPump2(String time){
+        txtHistoryP1.append(time+"\n");
     }
 
     @SuppressLint("SetTextI18n")
@@ -112,14 +119,18 @@ public class NotificationsFragment extends Fragment {
 
         @Override
         protected void onPostExecute(List<List<String>> allPumpTimes) {
-            super.onPostExecute(lightStatuses);
+            super.onPostExecute(allPumpTimes);
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask onPostExecute");
             //set Text views
 
 
+            for(int j = 0; j<allPumpTimes.get(0).size();j++){
+                appendPump1(allPumpTimes.get(0).get(j));
+            }
+
+            for(int i = 0; i<allPumpTimes.get(1).size();i++){
+                appendPump2(allPumpTimes.get(1).get(i));
+            }
         }
-
-
     }
-
 }

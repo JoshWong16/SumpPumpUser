@@ -27,12 +27,15 @@ import com.example.sumppumpuser.ShowLightStatus;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
 
     TextView Light1, Light2, Light3, Light4, Light5, Light6;
     Button btnRefresh;
     TextView[] textViewArr = new TextView[]{Light1, Light2, Light3, Light4, Light5, Light6};
+    Timer timer;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //HomeViewModel homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -50,19 +53,45 @@ public class HomeFragment extends Fragment {
         btnRefresh.setOnClickListener((new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FragmentTransaction ft = getFragmentManager().beginTransaction();
-                if (Build.VERSION.SDK_INT >= 26) {
-                    ft.setReorderingAllowed(false);
-                }
-                ft.detach(HomeFragment.this).attach(HomeFragment.this).commit();
+                refresh();
             }
         }));
 
-        //call getAllAsyncTask and execute
-        final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
-        getAllAsyncTask.execute();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                //call getAllAsyncTask and execute
+                final GetAllAsyncTask getAllAsyncTask = new GetAllAsyncTask();
+                getAllAsyncTask.execute();
+            }
+        };
+
+        timer = new Timer("MyTimer");//create a new timer
+        timer.scheduleAtFixedRate(timerTask, 1000, 3000);
         return root;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        timer.cancel();
+    }
+
+    private void refresh() {
+        timer.cancel();
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        if (Build.VERSION.SDK_INT >= 26) {
+            ft.setReorderingAllowed(false);
+        }
+        ft.detach(HomeFragment.this).attach(HomeFragment.this).commit();
+    }
+
 
     /**
      * Async Task to get all light statuses
@@ -112,7 +141,6 @@ public class HomeFragment extends Fragment {
             }
 
         }
-
 
     }
 
