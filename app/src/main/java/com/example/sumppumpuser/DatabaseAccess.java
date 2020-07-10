@@ -1,6 +1,7 @@
 package com.example.sumppumpuser;
 
 import android.app.ActionBar;
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.provider.ContactsContract;
 import android.provider.DocumentsContract;
@@ -159,6 +160,7 @@ public class DatabaseAccess {
             DynamoDBEntry timeSet = retrievedDoc.get(pumpName);
             //convert set to list and return
             List<String> timeList = timeSet.convertToAttributeValue().getSS();
+            Log.d(AppSettings.tag, "Returned Timelist");
             return timeList;
         }
         else{

@@ -110,6 +110,8 @@ public class NotificationsFragment extends Fragment {
 
                 allPumpTimes.add(pumpTimes1);
                 allPumpTimes.add(pumpTimes2);
+
+                Log.d(AppSettings.tag, String.valueOf(allPumpTimes));
             }catch (Exception e){
                 Log.e(AppSettings.tag, "error getting pump times: " + e.getLocalizedMessage());
             }
