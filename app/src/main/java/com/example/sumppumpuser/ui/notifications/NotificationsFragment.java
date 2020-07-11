@@ -52,8 +52,6 @@ public class NotificationsFragment extends Fragment {
         final LinearLayout layout1 = root.findViewById(R.id.layout_historyP1);
         final LinearLayout layout2 = root.findViewById(R.id.layout_historyP2);
 
-        final GetPumpTimesAsyncTask getPumps = new GetPumpTimesAsyncTask();
-
         txtHistoryP1 = new TextView(this.getContext());
         txtHistoryP1.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT,
@@ -66,15 +64,20 @@ public class NotificationsFragment extends Fragment {
                 ViewGroup.LayoutParams.WRAP_CONTENT));
         ((LinearLayout) layout1).addView(txtHistoryP2);
 
-        txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
-        txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
-
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                txtHistoryP1.setText("");
-                txtHistoryP2.setText("");
-                getPumps.execute();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        final GetPumpTimesAsyncTask getPumps = new GetPumpTimesAsyncTask();
+                        txtHistoryP1.setText("");
+                        txtHistoryP2.setText("");
+                        getPumps.execute();
+                        txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
+                        txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
+                    }
+                });
             }
         };
 
