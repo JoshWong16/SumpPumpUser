@@ -2,6 +2,7 @@ package com.example.sumppumpuser.ui.notifications;
 
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -24,10 +26,13 @@ import com.example.sumppumpuser.DatabaseAccess;
 import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.PumpTimes;
 import com.example.sumppumpuser.R;
+import com.example.sumppumpuser.ui.home.HomeFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class NotificationsFragment extends Fragment {
 
@@ -35,6 +40,7 @@ public class NotificationsFragment extends Fragment {
     public TextView txtHistoryP2;
     public static TextView txtPump1;
     public static TextView txtPump2;
+    private Timer timer;
 
     @SuppressLint("SetTextI18n")
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,7 +52,7 @@ public class NotificationsFragment extends Fragment {
         final LinearLayout layout1 = root.findViewById(R.id.layout_historyP1);
         final LinearLayout layout2 = root.findViewById(R.id.layout_historyP2);
 
-        GetPumpTimesAsyncTask getPumps = new GetPumpTimesAsyncTask();
+        final GetPumpTimesAsyncTask getPumps = new GetPumpTimesAsyncTask();
 
         txtHistoryP1 = new TextView(this.getContext());
         txtHistoryP1.setLayoutParams(new ViewGroup.LayoutParams(
@@ -63,11 +69,31 @@ public class NotificationsFragment extends Fragment {
         txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
         txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
 
-        txtHistoryP1.setText("");
-        txtHistoryP2.setText("");
-        getPumps.execute();
+        TimerTask timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                txtHistoryP1.setText("");
+                txtHistoryP2.setText("");
+                getPumps.execute();
+            }
+        };
+
+        timer = new Timer("MyTimer");//create a new timer
+        timer.scheduleAtFixedRate(timerTask, 1000, 3000);
 
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        timer.cancel();
     }
 
     public void appendPump1(String time){
