@@ -160,7 +160,7 @@ public class DatabaseAccess {
             DynamoDBEntry timeSet = retrievedDoc.get(pumpName);
             //convert set to list and return
             List<String> timeList = timeSet.convertToAttributeValue().getSS();
-            Log.d(AppSettings.tag, "Returned Timelist");
+            Log.d(AppSettings.tag, String.valueOf(timeList));
             return timeList;
         }
         else{

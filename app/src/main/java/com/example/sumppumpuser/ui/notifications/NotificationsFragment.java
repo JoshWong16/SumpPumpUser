@@ -25,6 +25,7 @@ import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.PumpTimes;
 import com.example.sumppumpuser.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -51,13 +52,13 @@ public class NotificationsFragment extends Fragment {
         txtHistoryP1.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) layout1).addView(txtHistoryP1);
+        ((LinearLayout) layout2).addView(txtHistoryP1);
 
         txtHistoryP2 = new TextView(this.getContext());
         txtHistoryP2.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
-        ((LinearLayout) layout2).addView(txtHistoryP2);
+        ((LinearLayout) layout1).addView(txtHistoryP2);
 
         txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
         txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
@@ -74,7 +75,7 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void appendPump2(String time){
-        txtHistoryP1.append(time+"\n");
+        txtHistoryP2.append(time+"\n");
     }
 
     @SuppressLint("SetTextI18n")
@@ -89,7 +90,7 @@ public class NotificationsFragment extends Fragment {
     private class GetPumpTimesAsyncTask extends AsyncTask<Void, Void, List<List<String>>> {
         List<String> pumpTimes1;
         List<String> pumpTimes2;
-        List<List<String>> allPumpTimes;
+        List<List<String>> allPumpTimes = new ArrayList<>();
         @Override
         protected List<List<String>> doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask DoInBackground");
@@ -124,15 +125,21 @@ public class NotificationsFragment extends Fragment {
             super.onPostExecute(allPumpTimes);
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask onPostExecute");
             //set Text views
-
+            int totalP1 = 0;
+            int totalP2 = 0;
 
             for(int j = 0; j<allPumpTimes.get(0).size();j++){
                 appendPump1(allPumpTimes.get(0).get(j));
+                totalP1 = totalP1 + Integer.parseInt(allPumpTimes.get(0).get(j));
             }
 
             for(int i = 0; i<allPumpTimes.get(1).size();i++){
                 appendPump2(allPumpTimes.get(1).get(i));
+                totalP2 = totalP2 + Integer.parseInt(allPumpTimes.get(1).get(i));
             }
+
+            PumpTimes.pump1Total = totalP1;
+            PumpTimes.pump2Total = totalP2;
         }
     }
 }
