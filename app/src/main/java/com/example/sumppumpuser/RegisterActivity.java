@@ -64,7 +64,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //add user attributes
                 userAttributes.addAttribute("given_name", String.valueOf(inputName.getText()));
                 userAttributes.addAttribute("email", String.valueOf(inputEmail.getText()));
-                userAttributes.addAttribute("phone_number", String.valueOf(inputPhone.getText()));
+                userAttributes.addAttribute("phone_number", "+1" + String.valueOf(inputPhone.getText()));
 
                 //access custom cognitoSettings class and call getUserPool() to sign up user
                 CognitoSettings cognitoSettings = new CognitoSettings(RegisterActivity.this);
