@@ -66,6 +66,8 @@ public class DashboardFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         PumpTimes.pump1Total = 0;
                         NotificationsFragment.updatePumpsTotal();
+                        ResetPumpTimesAsyncTask resetPumpTimesAsyncTask = new ResetPumpTimesAsyncTask();
+                        resetPumpTimesAsyncTask.execute("PumpTimes1");
                     }
                 });
                 builder.show();
@@ -93,6 +95,8 @@ public class DashboardFragment extends Fragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         PumpTimes.pump2Total = 0;
                         NotificationsFragment.updatePumpsTotal();
+                        ResetPumpTimesAsyncTask resetPumpTimesAsyncTask = new ResetPumpTimesAsyncTask();
+                        resetPumpTimesAsyncTask.execute("PumpTimes2");
                     }
                 });
                 builder.show();
