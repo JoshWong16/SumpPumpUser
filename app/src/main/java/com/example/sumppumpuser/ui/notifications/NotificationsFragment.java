@@ -25,6 +25,7 @@ import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.PumpTimes;
 import com.example.sumppumpuser.R;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class NotificationsFragment extends Fragment {
     private class GetPumpTimesAsyncTask extends AsyncTask<Void, Void, List<List<String>>> {
         List<String> pumpTimes1;
         List<String> pumpTimes2;
-        List<List<String>> allPumpTimes;
+        List<List<String>> allPumpTimes = new ArrayList<>();
         @Override
         protected List<List<String>> doInBackground(Void... voids) {
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask DoInBackground");

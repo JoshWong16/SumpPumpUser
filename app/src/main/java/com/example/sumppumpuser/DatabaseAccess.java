@@ -23,6 +23,7 @@ import com.amazonaws.services.dynamodbv2.model.ReturnValue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -152,7 +153,12 @@ public class DatabaseAccess {
         }
     }
 
-
+    /**
+     * retrieves the String set of pump times from dynamoDB
+     * @param subject user subject
+     * @param pumpName name of pump
+     * @return List of pump times
+     */
     public List<String> getPumpTimeSet(String subject, String pumpName){
         Document retrievedDoc = dbTable.getItem(new Primitive(subject));
         if(retrievedDoc != null){
@@ -160,12 +166,44 @@ public class DatabaseAccess {
             DynamoDBEntry timeSet = retrievedDoc.get(pumpName);
             //convert set to list and return
             List<String> timeList = timeSet.convertToAttributeValue().getSS();
-            Log.d(AppSettings.tag, "Returned Timelist");
+
             return timeList;
         }
         else{
             Log.e(AppSettings.tag, "error retrieving userItem from Dynamo");
             return null;
+        }
+    }
+
+    /**
+     * Resets String set of pump times in DynamoDB
+     * @param subject user subject
+     * @param pumpName name of pump to reset
+     * @return whether it was successful or not
+     */
+    public Boolean resetPumpTimes(String subject, String pumpName){
+        Document retrievedDoc = dbTable.getItem(new Primitive(subject));
+        if(retrievedDoc != null){
+            //create new String set
+            Set<String> replacementSet = new HashSet<>();
+            replacementSet.add("0"); //DynamoDB doesn't like empty sets
+
+            //update set in DynamoDB
+            retrievedDoc.put(pumpName, replacementSet);
+            Document updateResult = dbTable.updateItem(retrievedDoc, new Primitive(subject), new UpdateItemOperationConfig().withReturnValues(ReturnValue.UPDATED_NEW));
+
+            try{
+                Log.d(AppSettings.tag, "Update Result: " + Document.toJson(updateResult));
+            }catch (Exception e){
+                e.printStackTrace();
+                Log.i(AppSettings.tag, "updatePumpTime json error: " + e.getLocalizedMessage());
+            }
+            return true;
+        }
+
+        else{
+            Log.e(AppSettings.tag, "error retrieving userItem from Dynamo");
+            return false;
         }
     }
 
