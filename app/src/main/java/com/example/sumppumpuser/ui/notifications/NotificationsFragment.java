@@ -29,6 +29,8 @@ import com.example.sumppumpuser.R;
 import com.example.sumppumpuser.ui.home.HomeFragment;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -100,11 +102,13 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void appendPump1(String time){
-        txtHistoryP1.append(time+"\n");
+        Date currentTime = Calendar.getInstance().getTime();
+        txtHistoryP1.append(currentTime+": "+time+"\n");
     }
 
     public void appendPump2(String time){
-        txtHistoryP2.append(time+"\n");
+        Date currentTime = Calendar.getInstance().getTime();
+        txtHistoryP2.append(currentTime+": "+time+"\n");
     }
 
     @SuppressLint("SetTextI18n")
