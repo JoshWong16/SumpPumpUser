@@ -131,22 +131,22 @@ public class NotificationsFragment extends Fragment {
      *
      * returns the total time
      */
-    public int sortDateAscending(int pumpSize, List<List<String>> allPumpTimes){
+    public int sortDateAscending(int pumpSize, List<List<String>> allPumpTimes, int index){
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy");
 
         int total = 0;
 
         String[] times1Arr = new String[pumpSize];
 
-        for (int i = 0; i < pumpSize; i++) {
-            times1Arr[i] = allPumpTimes.get(0).get(1);
+        for (int i = 1; i < pumpSize; i++) {
+            times1Arr[i] = allPumpTimes.get(index).get(1);
         }
 
         Date date1 = null;
         Date date2 = null;
         String temp;
 
-        for (int k = 0; k < pumpSize; k++) {
+        for (int k = 1; k < pumpSize; k++) {
 
             String[] date1Split = times1Arr[k].split(",", -1);
             try {
@@ -237,8 +237,8 @@ public class NotificationsFragment extends Fragment {
             int pump2Size = (allPumpTimes.get(1).size())-1;
 
 
-            PumpTimes.pump1Total = sortDateAscending(pump1Size, allPumpTimes);
-            PumpTimes.pump2Total = sortDateAscending(pump2Size, allPumpTimes);
+            PumpTimes.pump1Total = sortDateAscending(pump1Size, allPumpTimes, 0);
+            PumpTimes.pump2Total = sortDateAscending(pump2Size, allPumpTimes, 1);
         }
     }
 }
