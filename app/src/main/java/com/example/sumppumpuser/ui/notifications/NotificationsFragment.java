@@ -28,6 +28,9 @@ import com.example.sumppumpuser.PumpTimes;
 import com.example.sumppumpuser.R;
 import com.example.sumppumpuser.ui.home.HomeFragment;
 
+import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -102,13 +105,15 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void appendPump1(String time){
-        Date currentTime = Calendar.getInstance().getTime();
-        txtHistoryP1.append(currentTime+": "+time+"\n");
+        String arr[] = time.split(",", -1);
+        txtHistoryP1.append("<b>" + arr[0] + "</b> ");
+        txtHistoryP1.append(arr[1]);
     }
 
     public void appendPump2(String time){
-        Date currentTime = Calendar.getInstance().getTime();
-        txtHistoryP2.append(currentTime+": "+time+"\n");
+        String arr[] = time.split(",", -1);
+        txtHistoryP2.append("<b>" + arr[0] + "</b> ");
+        txtHistoryP2.append(arr[1]);
     }
 
     @SuppressLint("SetTextI18n")
@@ -116,6 +121,76 @@ public class NotificationsFragment extends Fragment {
         txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
         txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
     }
+
+
+
+    /**
+     *
+     *
+     * Sorts the dates in ascending order and prints them
+     *
+     * returns the total time
+     */
+    public int sortDateAscending(int pumpSize, List<List<String>> allPumpTimes){
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy");
+
+        int total = 0;
+
+        String[] times1Arr = new String[pumpSize];
+
+        for (int i = 0; i < pumpSize; i++) {
+            times1Arr[i] = allPumpTimes.get(0).get(1);
+        }
+
+        Date date1 = null;
+        Date date2 = null;
+        String temp;
+
+        for (int k = 0; k < pumpSize; k++) {
+
+            String[] date1Split = times1Arr[k].split(",", -1);
+            try {
+                date1 = sdf.parse(date1Split[0]);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            for (int h = k + 1; h < pumpSize; h++) {
+
+                String[] date2Split = times1Arr[h].split(",", -1);
+                try {
+                    date2 = sdf.parse(date2Split[0]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+
+                try {
+                    date2 = sdf.parse(date1Split[0]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if ( date1 != null && date2 != null && date1.compareTo(date2) > 0) {
+                    temp = times1Arr[k];
+                    times1Arr[k] = times1Arr[h];
+                    times1Arr[h] = temp;
+                }
+            }
+        }
+
+        for (int m = 0; m < pumpSize; m++) {
+            appendPump1(times1Arr[m]);
+            total = total + Integer.parseInt(times1Arr[m].split(",",-1)[1]);
+        }
+        return total;
+    }
+
+
+
+
+
+
 
     /**
      * Async Task to get and display pump times
@@ -157,22 +232,13 @@ public class NotificationsFragment extends Fragment {
         protected void onPostExecute(List<List<String>> allPumpTimes) {
             super.onPostExecute(allPumpTimes);
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask onPostExecute");
-            //set Text views
-            int totalP1 = 0;
-            int totalP2 = 0;
 
-            for(int j = 0; j<allPumpTimes.get(0).size();j++){
-                appendPump1(allPumpTimes.get(0).get(j));
-                totalP1 = totalP1 + Integer.parseInt(allPumpTimes.get(0).get(j));
-            }
+            int pump1Size = (allPumpTimes.get(0).size())-1;//first entry is 0
+            int pump2Size = (allPumpTimes.get(1).size())-1;
 
-            for(int i = 0; i<allPumpTimes.get(1).size();i++){
-                appendPump2(allPumpTimes.get(1).get(i));
-                totalP2 = totalP2 + Integer.parseInt(allPumpTimes.get(1).get(i));
-            }
 
-            PumpTimes.pump1Total = totalP1;
-            PumpTimes.pump2Total = totalP2;
+            PumpTimes.pump1Total = sortDateAscending(pump1Size, allPumpTimes);
+            PumpTimes.pump2Total = sortDateAscending(pump2Size, allPumpTimes);
         }
     }
 }
