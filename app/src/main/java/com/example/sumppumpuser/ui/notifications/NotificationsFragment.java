@@ -79,15 +79,15 @@ public class NotificationsFragment extends Fragment {
                         txtHistoryP1.setText("");
                         txtHistoryP2.setText("");
                         getPumps.execute();
-                        txtPump1.setText("Pump 1 Runtime: " + PumpTimes.pump1Total);
-                        txtPump2.setText("Pump 2 Runtime: " + PumpTimes.pump2Total);
+                        txtPump1.setText("Pump 1 Total Runtime: " + PumpTimes.pump1Total);
+                        txtPump2.setText("Pump 2 Total Runtime: " + PumpTimes.pump2Total);
                     }
                 });
             }
         };
 
         timer = new Timer("MyTimer");//create a new timer
-        timer.scheduleAtFixedRate(timerTask, 1000, 3000);
+        timer.scheduleAtFixedRate(timerTask, 1000, 10000);
 
         return root;
     }
@@ -105,15 +105,12 @@ public class NotificationsFragment extends Fragment {
     }
 
     public void appendPump1(String time){
-        String arr[] = time.split(",", -1);
-        txtHistoryP1.append("<b>" + arr[0] + "</b> ");
-        txtHistoryP1.append(arr[1]);
+
+        txtHistoryP1.append(time + "\n"+ "\n");
     }
 
     public void appendPump2(String time){
-        String arr[] = time.split(",", -1);
-        txtHistoryP2.append("<b>" + arr[0] + "</b> ");
-        txtHistoryP2.append(arr[1]);
+        txtHistoryP2.append(time + "\n"+ "\n");
     }
 
     @SuppressLint("SetTextI18n")
@@ -131,7 +128,7 @@ public class NotificationsFragment extends Fragment {
      *
      * returns the total time
      */
-    public int sortDateAscending(int pumpSize, List<List<String>> allPumpTimes, int index){
+    public int sortDateAscending(int pumpSize, List<List<String>> allPumpTimes, int index) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM d HH:mm:ss z yyyy");
 
         int total = 0;
@@ -139,12 +136,19 @@ public class NotificationsFragment extends Fragment {
         String[] times1Arr = new String[pumpSize];
 
         for (int i = 1; i < pumpSize; i++) {
-            times1Arr[i] = allPumpTimes.get(index).get(1);
+            times1Arr[i] = allPumpTimes.get(index).get(i);
         }
 
         Date date1 = null;
         Date date2 = null;
         String temp;
+        int hoursPrev = 0;
+        int minutesPrev = 0;
+        int secondsPrev = 0;
+        int hoursDiff = 0;
+        int minutesDiff = 0;
+        int secondsDiff = 0;
+
 
         for (int k = 1; k < pumpSize; k++) {
 
@@ -154,6 +158,9 @@ public class NotificationsFragment extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+
+
+
 
             for (int h = k + 1; h < pumpSize; h++) {
 
@@ -179,9 +186,45 @@ public class NotificationsFragment extends Fragment {
             }
         }
 
-        for (int m = 0; m < pumpSize; m++) {
-            appendPump1(times1Arr[m]);
-            total = total + Integer.parseInt(times1Arr[m].split(",",-1)[1]);
+        for (int m = 1; m < pumpSize; m++) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MMM d yyyy HH:mm:ss");
+            String[] arrSplit = times1Arr[m].split(",", -1);
+            Date tempDate = sdf.parse(arrSplit[0]);
+            String strDate = formatter.format(tempDate);
+
+            //getting between runtime times
+            String[] spcSplit = arrSplit[0].split(" ", -1);
+            String[] hms = spcSplit[3].split(":", -1);
+            String hours= hms[0];
+            String minutes = hms[1];
+            String seconds = hms[2];
+            String time = arrSplit[1];
+
+            if(m > 1){
+                hoursDiff = Integer.parseInt(hours) - hoursPrev;
+                minutesDiff = Integer.parseInt(minutes) - minutesPrev;
+                secondsDiff = Integer.parseInt(seconds) - secondsPrev;
+
+            }
+            hoursPrev = Integer.parseInt(hours);
+            minutesPrev = Integer.parseInt(minutes);
+            secondsPrev = Integer.parseInt(seconds) + Integer.parseInt(time);
+
+
+
+
+            if(index == 0) {
+                if(m>1){
+                    appendPump1(hoursDiff+":"+minutesDiff+":"+secondsDiff);
+                }
+                appendPump1(strDate + " ---" + arrSplit[1]);
+            }else {
+                if(m>1){
+                    appendPump2(hoursDiff+":"+minutesDiff+":"+secondsDiff);
+                }
+                appendPump2(strDate + " ---" + arrSplit[1]);
+            }
+            total = total + Integer.parseInt(arrSplit[1]);
         }
         return total;
     }
@@ -237,8 +280,12 @@ public class NotificationsFragment extends Fragment {
             int pump2Size = (allPumpTimes.get(1).size())-1;
 
 
-            PumpTimes.pump1Total = sortDateAscending(pump1Size, allPumpTimes, 0);
-            PumpTimes.pump2Total = sortDateAscending(pump2Size, allPumpTimes, 1);
+            try {
+                PumpTimes.pump1Total = sortDateAscending(pump1Size, allPumpTimes, 0);
+                PumpTimes.pump2Total = sortDateAscending(pump2Size, allPumpTimes, 1);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

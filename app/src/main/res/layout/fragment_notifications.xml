@@ -70,8 +70,9 @@
     <ScrollView
         android:id="@+id/scroll_historyP2"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_marginTop="20dp"
+        android:layout_marginBottom="600dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/scroll_historyP1"
         app:layout_constraintTop_toBottomOf="@id/text_pump1Title">
@@ -86,7 +87,7 @@
     <ScrollView
         android:id="@+id/scroll_historyP1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="300dp"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/scroll_historyP2"

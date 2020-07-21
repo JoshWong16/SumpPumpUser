@@ -45,6 +45,5 @@
         android:layout_height="300dp"
         android:layout_centerInParent="true"
         android:scaleType="centerInside"
-        android:src="@drawable/sumppump_diagram"
         app:layout_constraintTop_toBottomOf="@+id/button_reset_pump2"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
