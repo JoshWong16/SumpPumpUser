@@ -276,8 +276,8 @@ public class NotificationsFragment extends Fragment {
             super.onPostExecute(allPumpTimes);
             Log.d(AppSettings.tag, "In GetPumpTimesAsyncTask onPostExecute");
 
-            int pump1Size = (allPumpTimes.get(0).size())-1;//first entry is 0
-            int pump2Size = (allPumpTimes.get(1).size())-1;
+            int pump1Size = (allPumpTimes.get(0).size());
+            int pump2Size = (allPumpTimes.get(1).size());
 
 
             try {
