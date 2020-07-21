@@ -215,14 +215,14 @@ public class NotificationsFragment extends Fragment {
 
             if(index == 0) {
                 if(m>1){
-                    appendPump1(hoursDiff+":"+minutesDiff+":"+secondsDiff);
+                    appendPump1("Inactive time: "+hoursDiff+":"+minutesDiff+":"+secondsDiff);
                 }
-                appendPump1(strDate + " ---" + arrSplit[1]);
+                appendPump1("Active time: "+ strDate + " ---" + arrSplit[1]);
             }else {
                 if(m>1){
-                    appendPump2(hoursDiff+":"+minutesDiff+":"+secondsDiff);
+                    appendPump2("Inactive time: "+hoursDiff+":"+minutesDiff+":"+secondsDiff);
                 }
-                appendPump2(strDate + " ---" + arrSplit[1]);
+                appendPump2("Active time: "+ strDate + " ---" + arrSplit[1]);
             }
             total = total + Integer.parseInt(arrSplit[1]);
         }
