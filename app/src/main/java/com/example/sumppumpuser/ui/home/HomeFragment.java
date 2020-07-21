@@ -1,6 +1,5 @@
 package com.example.sumppumpuser.ui.home;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,19 +15,13 @@ import com.amazonaws.mobileconnectors.dynamodbv2.document.datatype.Document;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProviders;
 
 import com.auth0.android.jwt.JWT;
 import com.example.sumppumpuser.AppSettings;
 import com.example.sumppumpuser.DatabaseAccess;
-import com.example.sumppumpuser.MainActivity;
 import com.example.sumppumpuser.R;
-import com.example.sumppumpuser.ShowLightStatus;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -109,7 +102,7 @@ public class HomeFragment extends Fragment {
             //retrieve Intent from LoginActivity create login credentials for identity pool
             String idToken = getActivity().getIntent().getStringExtra("idToken");
             HashMap<String, String> logins = new HashMap<String, String>();
-            logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+            logins.put(AppSettings.cognitoPoolURL, idToken);
 
             //create instance of DatabaseAccess and access user idToken
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getActivity(), logins);

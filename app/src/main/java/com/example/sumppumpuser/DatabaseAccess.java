@@ -19,6 +19,7 @@ import com.amazonaws.regions.Region;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClient;
 import com.amazonaws.services.dynamodbv2.model.ReturnValue;
+import com.auth0.android.jwt.JWT;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,9 +37,7 @@ public class DatabaseAccess {
 
     private String TAG = "SumpPumpDB";
 
-    private final String COGNITO_IDENTITY_POOL_ID = "us-west-2:8f70a2b5-fb95-452b-8240-4cfe1ce3974a";
     private final Regions COGNITO_ITENTITY_POOL_REGION = Regions.US_WEST_2;
-    private final String DYNAMODB_TABLE = "SumpPumpUsers";
     private Context context;
     private CognitoCachingCredentialsProvider credentialsProvider;
     private AmazonDynamoDBClient dbClient;
@@ -53,14 +52,14 @@ public class DatabaseAccess {
         this.context = context;
 
         //Create a new credentials provider
-        credentialsProvider =  new CognitoCachingCredentialsProvider(context, COGNITO_IDENTITY_POOL_ID, COGNITO_ITENTITY_POOL_REGION);
+        credentialsProvider =  new CognitoCachingCredentialsProvider(context, AppSettings.COGNITO_IDENTITY_POOL_ID, COGNITO_ITENTITY_POOL_REGION);
         credentialsProvider.setLogins(logins);
         //Create a connection to the DynamoDB service
         dbClient = new AmazonDynamoDBClient(credentialsProvider);
         //Must set dbClient region here or else it defaults to us_east_1
         dbClient.setRegion(Region.getRegion(Regions.US_WEST_2));
         //Create a table reference
-        dbTable = Table.loadTable(dbClient, DYNAMODB_TABLE);
+        dbTable = Table.loadTable(dbClient, AppSettings.DYNAMODB_TABLE_NAME);
     }
 
     /**
@@ -207,4 +206,40 @@ public class DatabaseAccess {
         }
     }
 
+    /**
+     * createUser: when new user registers, this function creates a new row item in dynamodb for new user
+     * @param idToken user's idToken
+     * @param username
+     * @param phone user's phone number
+     */
+    public void createUser(String idToken, String username, String phone){
+        //get user subject from idToken
+        JWT jwt = new JWT(idToken);
+        String subject = jwt.getSubject();
+
+        //create new user document object
+        //add attributes
+        Document user = new Document();
+        user.put("UserId", subject);
+        user.put("phone", "1" + phone);
+        user.put("username", username);
+        user.put("LightStatus1", "false");
+        user.put("LightStatus2", "false");
+        user.put("LightStatus3", "false");
+        user.put("LightStatus4", "false");
+        user.put("LightStatus5", "false");
+        user.put("LightStatus6", "false");
+        Set<String> pumpTimes1 = new HashSet<>();
+        pumpTimes1.add("0");
+        Set<String> pumpTimes2 = new HashSet<>();
+        pumpTimes2.add("0");
+        user.put("PumpTimes1", pumpTimes1);
+        user.put("PumpTimes2", pumpTimes2);
+
+        //add new user item to dynamoDB table
+        dbTable.putItem(user);
+
+    }
+
 }
+

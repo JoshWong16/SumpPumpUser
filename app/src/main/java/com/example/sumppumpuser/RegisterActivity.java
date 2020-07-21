@@ -43,7 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
                 //check if this user (cognitoUser) needs to be confirmed
                 if (!signUpConfirmationState){
                     Log.d(AppSettings.tag, "sign up success...not confirmed, verification code sent to: " + cognitoUserCodeDeliveryDetails.getDestination());
-                    onRegisterClicked();
+                    onRegisterClicked(String.valueOf(inputUsername.getText()), String.valueOf(inputPhone.getText()));
                 }
                 else{
                     //user already confirmed
@@ -86,9 +86,11 @@ public class RegisterActivity extends AppCompatActivity {
     /**
      * Creates intent to start new verification activity
      */
-    private void onRegisterClicked(){
+    private void onRegisterClicked(String username, String phone){
         Log.d(AppSettings.tag, "onRegisterClicked");
         Intent intent = new Intent("android.intent.action.VerifyActivity");
+        intent.putExtra("username", username);
+        intent.putExtra("phone", phone);
         startActivity(intent);
     }
 

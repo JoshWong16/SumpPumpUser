@@ -249,7 +249,7 @@ public class NotificationsFragment extends Fragment {
             //retrieve Intent from LoginActivity create login credentials for identity pool
             String idToken = getActivity().getIntent().getStringExtra("idToken");
             HashMap<String, String> logins = new HashMap<String, String>();
-            logins.put("cognito-idp.us-west-2.amazonaws.com/us-west-2_kZujWKyqd", idToken);
+            logins.put(AppSettings.cognitoPoolURL, idToken);
 
             //create instance of DatabaseAccess and access user idToken
             DatabaseAccess databaseAccess = DatabaseAccess.getInstance(getActivity(), logins);
